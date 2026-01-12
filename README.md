@@ -1,73 +1,65 @@
-Gemini 3.0 PDF 요약 및 질의응답 시스템
+# 논문(PDF) 요약 및 질의응답 데모
 
-Gemini 3.0 API와 Streamlit을 활용하여 PDF 문서의 내용을 분석, 요약하고 대화형 질의응답을 수행하는 프로그램임.
+Google Gemini API를 활용하여 업로드된 PDF 논문을 요약하고, 해당 논문 내용을 바탕으로 질의응답(Q&A)을 수행하는 데모 프로그램이다. Streamlit 프레임워크를 기반으로 웹 인터페이스를 제공한다.
 
-1. 주요 기능
+## 구성 파일 설명
 
-PDF 텍스트 분석: 업로드된 PDF 파일을 Gemini File API를 통해 서버 측에서 직접 처리함.
+본 프로젝트는 다음 4개의 파일로 구성된다.
 
-자동 요약: 문서 업로드와 동시에 Gemini 모델이 전체 내용을 파악하여 핵심 요약본을 생성함.
+1.  **`pdf_chat_gui.py`**
+    *   메인 애플리케이션 파일이다.
+    *   Streamlit을 사용하여 PDF 파일 업로드, 논문 요약, 채팅 인터페이스를 제공한다.
+    *   업로드된 파일을 Gemini에 전송하고, `gemini-3-flash-preview` 모델을 사용하여 요약 및 대화를 수행한다.
 
-문맥 유지 대화: 세션 상태(Session State)를 활용하여 이전 대화 기록을 포함한 연속성 있는 질의응답을 지원함.
+2.  **`check_models.py`**
+    *   사용 가능한 Google Gemini 모델 목록을 확인하는 유틸리티 스크립트이다.
+    *   API 키 설정 상태를 확인하고, `generateContent` 메서드를 지원하는 모델명을 출력한다.
 
-실시간 스트리밍: Streamlit 인터페이스를 통해 처리 과정 및 답변을 실시간으로 확인 가능함.
+3.  **`requirements.txt`**
+    *   프로그램 실행에 필요한 Python 라이브러리 목록이 기재되어 있다.
+    *   주요 의존성: `streamlit`, `google-generativeai`, `python-dotenv`.
 
-2. 기술 스택
+4.  **`.env`**
+    *   환경 변수 설정 파일이다.
+    *   Google API Key (`GOOGLE_API_KEY`)를 저장하여 코드 내에서 호출할 수 있게 한다.
 
-Language: Python 3.9+
+## 설치 방법
 
-Framework: Streamlit
+Python 환경(3.9 이상 권장)에서 다음 명령어를 통해 필요한 패키지를 설치한다.
 
-LLM API: Google Gemini 3.0 (gemini-2.0-flash-exp 등)
-
-Environment: python-dotenv (환경 변수 관리)
-
-3. 설치 및 설정
-
-3.1. 의존성 설치
-
-저장소를 클론한 후 필요한 라이브러리를 설치함.
-
+```bash
 pip install -r requirements.txt
+```
 
+## 설정
 
-3.2. 환경 변수 설정
+`check_models.py` 및 `pdf_chat_gui.py` 실행을 위해서는 유효한 Google API Key가 필요하다. `.env` 파일을 생성하거나 수정하여 키를 입력한다.
 
-프로젝트 루트 디렉토리에 .env 파일을 생성하고 Google AI Studio에서 발급받은 API 키를 입력함.
-
+```env
 GOOGLE_API_KEY=your_api_key_here
+```
 
+## 실행 방법
 
-4. 실행 방법
+### 1. 모델 확인 (선택 사항)
+사용 가능한 모델 목록을 확인하려면 다음 명령어를 실행한다.
 
-4.1. 모델 확인 (선택 사항)
-
-현재 API 키로 접근 가능한 모델 리스트 확인용 스크립트를 실행함.
-
+```bash
 python check_models.py
+```
 
+### 2. 프로그램 실행 (GUI)
+웹 인터페이스를 실행하려면 Streamlit 명령어를 사용한다.
 
-4.2. 애플리케이션 실행
-
-Streamlit 서버를 구동하여 웹 인터페이스를 실행함.
-
+```bash
 streamlit run pdf_chat_gui.py
+```
 
+실행 후 브라우저가 자동으로 열리며, 열리지 않을 경우 터미널에 표시된 로컬 URL(예: `http://localhost:8501`)로 접속한다.
 
-5. 프로젝트 구조
+## 주요 기능
 
-pdf_chat_gui.py: 메인 애플리케이션 파일. UI 구성 및 Gemini API 연동 로직 포함.
-
-check_models.py: API 연결 테스트 및 지원 모델 확인용 유틸리티.
-
-requirements.txt: 실행에 필요한 의존성 패키지 목록.
-
-.env: API 키 등 보안 정보 관리 파일 (Git 포함 주의).
-
-6. 주의 사항
-
-API 사용량: 무료 티어 사용 시 호출 횟수 제한(Rate Limit)에 따른 오류 발생 가능성 있음.
-
-보안: .env 파일이 외부 저장소에 노출되지 않도록 .gitignore 설정 권장함.
-
-파일 크기: Gemini File API 제한 사항에 따라 대용량 PDF 처리가 제한(2GB 이내)될 수 있음.
+*   **PDF 업로드**: 사이드바를 통해 PDF 파일을 업로드할 수 있다.
+*   **자동 요약**: 업로드된 문서의 내용을 자동으로 요약하여 제공한다.
+*   **문서 기반 대화**: 챗봇 인터페이스를 통해 문서 내용에 대해 질문하고 답변을 받을 수 있다.
+*   **멀티모달 처리**: 문서를 텍스트로 변환하지 않고 파일 자체를 모델에 전달하여 처리한다.
